@@ -1,0 +1,97 @@
+{
+  "@generated": "2026-10-29T11:45:00Z",
+  "@target": "http://127.0.0.1:5000",
+  "@mode": "vulnerable",
+  "@scanner": "OWASP ZAP 2.14.0 Baseline DAST Scan / Automated Lab Scanner",
+  "site": [
+    {
+      "@name": "http://127.0.0.1:5000",
+      "@host": "127.0.0.1",
+      "@port": "5000",
+      "@ssl": "false",
+      "alerts": [
+        {
+          "pluginId": "40018",
+          "alert": "SQL Injection - SQLite Tautology / Boolean Based",
+          "risk": "High",
+          "confidence": "High",
+          "cweid": "89",
+          "wascid": "19",
+          "owasp": "A03:2021-Injection",
+          "url": "http://127.0.0.1:5000/search?q=%27+OR+1%3D1+--",
+          "param": "q",
+          "evidence": "Search query altered catalog records without parameterization",
+          "solution": "Use parameterized prepared statements and validate user input length."
+        },
+        {
+          "pluginId": "10020",
+          "alert": "Missing Anti-clickjacking Header (X-Frame-Options)",
+          "risk": "Medium",
+          "confidence": "High",
+          "cweid": "1021",
+          "wascid": "15",
+          "owasp": "A05:2021-Security Misconfiguration",
+          "url": "http://127.0.0.1:5000/",
+          "evidence": "X-Frame-Options header not present in HTTP response",
+          "solution": "Configure server middleware to append 'X-Frame-Options: DENY'."
+        },
+        {
+          "pluginId": "10038",
+          "alert": "Content Security Policy (CSP) Header Not Set",
+          "risk": "Medium",
+          "confidence": "High",
+          "cweid": "693",
+          "wascid": "15",
+          "owasp": "A05:2021-Security Misconfiguration",
+          "url": "http://127.0.0.1:5000/",
+          "evidence": "Content-Security-Policy header not detected",
+          "solution": "Enforce strict CSP specifying trusted script and style sources."
+        },
+        {
+          "pluginId": "10021",
+          "alert": "X-Content-Type-Options Header Missing",
+          "risk": "Low",
+          "confidence": "High",
+          "cweid": "16",
+          "wascid": "15",
+          "owasp": "A05:2021-Security Misconfiguration",
+          "url": "http://127.0.0.1:5000/",
+          "evidence": "X-Content-Type-Options header not returned",
+          "solution": "Set 'X-Content-Type-Options: nosniff' across all responses."
+        },
+        {
+          "pluginId": "10010",
+          "alert": "Cookie No HttpOnly Flag",
+          "risk": "Low",
+          "confidence": "High",
+          "cweid": "1004",
+          "wascid": "13",
+          "owasp": "A07:2021-Identification and Authentication Failures",
+          "url": "http://127.0.0.1:5000/login",
+          "param": "secureshop_session",
+          "evidence": "Set-Cookie lacks HttpOnly attribute",
+          "solution": "Configure Flask SESSION_COOKIE_HTTPONLY = True."
+        },
+        {
+          "pluginId": "10036",
+          "alert": "Server Leaks Information via HTTP Response Header",
+          "risk": "Low",
+          "confidence": "High",
+          "cweid": "200",
+          "wascid": "13",
+          "owasp": "A05:2021-Security Misconfiguration",
+          "url": "http://127.0.0.1:5000/",
+          "evidence": "Server: Werkzeug/Debug-Unshielded",
+          "solution": "Sanitize or suppress the Server banner header."
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "High": 1,
+    "Medium": 2,
+    "Low": 3,
+    "Informational": 0,
+    "Total": 6
+  }
+}

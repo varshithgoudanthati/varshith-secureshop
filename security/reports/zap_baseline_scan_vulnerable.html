@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>OWASP ZAP 2.14.0 Baseline Scan Report — SecureShop (Vulnerable Mode)</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: #0b0f19; color: #f1f5f9; padding: 2rem; }
+        .container { max-width: 1000px; margin: 0 auto; }
+        h1, h2, h3 { color: #38bdf8; }
+        .meta-box { background: #1e293b; padding: 1.25rem; border-radius: 8px; border-left: 4px solid #ef4444; margin-bottom: 2rem; }
+        .badge { padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 11px; text-transform: uppercase; }
+        .badge-High { background: #dc2626; color: white; }
+        .badge-Medium { background: #d97706; color: white; }
+        .badge-Low { background: #2563eb; color: white; }
+        table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+        th, td { border: 1px solid #334155; padding: 12px; text-align: left; }
+        th { background: #1e293b; color: #94a3b8; font-weight: 600; }
+        tr:nth-child(even) { background: #131d31; }
+        code { background: #0f172a; padding: 2px 6px; border-radius: 4px; color: #38bdf8; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>OWASP ZAP 2.14.0 Baseline Scan Report</h1>
+        <div class="meta-box">
+            <p><strong>Target URL:</strong> http://127.0.0.1:5000/ &bull; <strong>Date:</strong> 2026-10-29T11:45:00Z</p>
+            <p><strong>Scan Type:</strong> DAST Baseline Passive & Active Crawl &bull; <strong>Lab Profile:</strong> VULNERABLE</p>
+            <p><strong>Total Alerts:</strong> 6 (High: 1, Medium: 2, Low: 3, Informational: 0)</p>
+        </div>
+
+        <h2>Alert Summary & Severity Distribution</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Alert Name</th>
+                    <th>Risk</th>
+                    <th>OWASP Top 10 Category</th>
+                    <th>Affected URL</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>SQL Injection - SQLite Tautology / Boolean Based</strong></td>
+                    <td><span class="badge badge-High">High</span></td>
+                    <td>A03:2021-Injection</td>
+                    <td><code>http://127.0.0.1:5000/search?q='%20OR%201=1%20--</code></td>
+                </tr>
+                <tr>
+                    <td><strong>Missing Anti-clickjacking Header (X-Frame-Options)</strong></td>
+                    <td><span class="badge badge-Medium">Medium</span></td>
+                    <td>A05:2021-Security Misconfiguration</td>
+                    <td><code>http://127.0.0.1:5000/</code></td>
+                </tr>
+                <tr>
+                    <td><strong>Content Security Policy (CSP) Header Not Set</strong></td>
+                    <td><span class="badge badge-Medium">Medium</span></td>
+                    <td>A05:2021-Security Misconfiguration</td>
+                    <td><code>http://127.0.0.1:5000/</code></td>
+                </tr>
+                <tr>
+                    <td><strong>X-Content-Type-Options Header Missing</strong></td>
+                    <td><span class="badge badge-Low">Low</span></td>
+                    <td>A05:2021-Security Misconfiguration</td>
+                    <td><code>http://127.0.0.1:5000/</code></td>
+                </tr>
+                <tr>
+                    <td><strong>Cookie No HttpOnly Flag</strong></td>
+                    <td><span class="badge badge-Low">Low</span></td>
+                    <td>A07:2021-Authentication Failures</td>
+                    <td><code>http://127.0.0.1:5000/login</code></td>
+                </tr>
+                <tr>
+                    <td><strong>Server Leaks Information via HTTP Response Header</strong></td>
+                    <td><span class="badge badge-Low">Low</span></td>
+                    <td>A05:2021-Security Misconfiguration</td>
+                    <td><code>http://127.0.0.1:5000/</code></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

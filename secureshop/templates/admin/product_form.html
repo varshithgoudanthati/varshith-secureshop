@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %}{% if product %}Edit Product #{{ product.id }}{% else %}Add Product{% endif %} — Admin SecureShop{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="glass-card p-4 p-md-5">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h1 class="h3 text-light mb-1">{% if product %}Edit Product{% else %}Add New Product{% endif %}</h1>
+                        <p class="text-secondary small mb-0">Fill in inventory and pricing parameters.</p>
+                    </div>
+                    <a href="{{ url_for('admin.products') }}" class="btn btn-outline-secondary btn-sm">&larr; Back to Products</a>
+                </div>
+
+                <form method="POST" action="">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-12">
+                            <label for="name" class="form-label text-light small fw-semibold">Product Title *</label>
+                            <input type="text" class="form-control form-control-dark" id="name" name="name" value="{{ product.name if product else '' }}" required>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="category" class="form-label text-light small fw-semibold">Category *</label>
+                            <input type="text" class="form-control form-control-dark" id="category" name="category" value="{{ product.category if product else 'Security Hardware' }}" required>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label for="price" class="form-label text-light small fw-semibold">Price ($) *</label>
+                            <input type="number" step="0.01" class="form-control form-control-dark" id="price" name="price" value="{{ product.price if product else '29.99' }}" required>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label for="stock" class="form-label text-light small fw-semibold">Stock Quantity *</label>
+                            <input type="number" class="form-control form-control-dark" id="stock" name="stock" value="{{ product.stock if product else '50' }}" required>
+                        </div>
+
+                        <div class="col-12">
+                            <label for="image_url" class="form-label text-light small fw-semibold">Image Asset Path *</label>
+                            <input type="text" class="form-control form-control-dark" id="image_url" name="image_url" value="{{ product.image_url if product else '/static/img/yubikey.svg' }}" required>
+                        </div>
+
+                        <div class="col-12">
+                            <label for="description" class="form-label text-light small fw-semibold">Description *</label>
+                            <textarea class="form-control form-control-dark" id="description" name="description" rows="4" required>{{ product.description if product else '' }}</textarea>
+                        </div>
+
+                        <div class="col-12">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="is_active" name="is_active" value="1" {% if not product or product.is_active %}checked{% endif %}>
+                                <label class="form-check-label text-light small" for="is_active">
+                                    Item is visible in public store catalog
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2">
+                        <a href="{{ url_for('admin.products') }}" class="btn btn-outline-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-primary-gradient px-4">
+                            {% if product %}Update Product{% else %}Create Product{% endif %}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

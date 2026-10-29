@@ -1,0 +1,9 @@
+# SecureShop - Vulnerable Profile (Lab Scenario A06: Vulnerable and Outdated Components)
+# NOTE: Used solely for educational audit demonstration in an isolated local lab.
+# sqlparse 0.4.3 suffers from CVE-2023-30608 (ReDoS) - fixed in 0.4.4 / 0.5.x.
+Flask==3.0.3
+Werkzeug==3.0.3
+Jinja2==3.1.4
+sqlparse==0.4.3
+requests==2.32.3
+pytest==8.2.2

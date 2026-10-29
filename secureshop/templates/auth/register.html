@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}Create Account — SecureShop{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="glass-card p-4 p-md-5">
+                <div class="text-center mb-4">
+                    <div class="display-6 mb-2">✨</div>
+                    <h2 class="h4 text-light fw-bold">Create Customer Account</h2>
+                    <p class="text-muted small">Sign up to simulate purchases and inspect order access control.</p>
+                </div>
+
+                <form method="POST" action="{{ url_for('auth.register') }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="username" class="form-label text-light small fw-semibold">Username *</label>
+                            <input type="text" class="form-control form-control-dark" id="username" name="username" value="{{ username or '' }}" required>
+                            <div class="form-text text-secondary small">Letters, numbers, underscores only.</div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="email" class="form-label text-light small fw-semibold">Email Address *</label>
+                            <input type="email" class="form-control form-control-dark" id="email" name="email" value="{{ email or '' }}" required>
+                        </div>
+
+                        <div class="col-12">
+                            <label for="full_name" class="form-label text-light small fw-semibold">Full Legal Name *</label>
+                            <input type="text" class="form-control form-control-dark" id="full_name" name="full_name" value="{{ full_name or '' }}" required>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="password" class="form-label text-light small fw-semibold">Password *</label>
+                            <input type="password" class="form-control form-control-dark" id="password" name="password" required>
+                            <div class="form-text text-secondary small">At least 8 characters.</div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="confirm_password" class="form-label text-light small fw-semibold">Confirm Password *</label>
+                            <input type="password" class="form-control form-control-dark" id="confirm_password" name="confirm_password" required>
+                        </div>
+
+                        <div class="col-12">
+                            <label for="address" class="form-label text-light small fw-semibold">Shipping Address (Optional)</label>
+                            <input type="text" class="form-control form-control-dark" id="address" name="address" value="{{ address or '' }}">
+                        </div>
+
+                        <div class="col-12">
+                            <label for="phone" class="form-label text-light small fw-semibold">Contact Phone (Optional)</label>
+                            <input type="text" class="form-control form-control-dark" id="phone" name="phone" value="{{ phone or '' }}">
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <button type="submit" class="btn btn-primary-gradient w-100 py-2 fw-semibold">
+                            Complete Registration
+                        </button>
+                    </div>
+                </form>
+
+                <div class="text-center mt-4">
+                    <p class="text-muted small mb-0">
+                        Already have an account? <a href="{{ url_for('auth.login') }}" class="text-info text-decoration-none">Sign In</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

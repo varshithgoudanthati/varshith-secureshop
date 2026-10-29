@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block title %}{{ product.name }} — SecureShop{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('products.index') }}" class="text-secondary text-decoration-none">Home</a></li>
+            <li class="breadcrumb-item"><a href="{{ url_for('products.catalog', category=product.category) }}" class="text-secondary text-decoration-none">{{ product.category }}</a></li>
+            <li class="breadcrumb-item active text-info" aria-current="page">{{ product.name }}</li>
+        </ol>
+    </nav>
+
+    <div class="row g-5">
+        <!-- Product Image -->
+        <div class="col-md-6">
+            <div class="glass-card p-5 text-center">
+                <img src="{{ product.image_url }}" alt="{{ product.name }}" class="img-fluid" style="max-height: 320px; filter: drop-shadow(0 15px 25px rgba(0,0,0,0.5));">
+            </div>
+        </div>
+
+        <!-- Product Purchase Information -->
+        <div class="col-md-6">
+            <div class="glass-card p-4 p-md-5">
+                <span class="badge badge-soft-indigo mb-2">{{ product.category }}</span>
+                <h1 class="h2 text-light fw-bold mb-3">{{ product.name }}</h1>
+                <div class="d-flex align-items-baseline gap-3 mb-4">
+                    <span class="display-6 fw-bold text-info">${{ "%.2f"|format(product.price) }}</span>
+                    <span class="badge {% if product.stock > 0 %}badge-soft-green{% else %}badge-soft-rose{% endif %} px-3 py-2">
+                        {% if product.stock > 0 %}In Stock ({{ product.stock }} units available){% else %}Out of Stock{% endif %}
+                    </span>
+                </div>
+
+                <p class="text-secondary mb-4 leading-relaxed">
+                    {{ product.description }}
+                </p>
+
+                <!-- Purchase Form -->
+                <form action="{{ url_for('cart.add') }}" method="POST" class="mb-4">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                    <input type="hidden" name="product_id" value="{{ product.id }}">
+                    
+                    <div class="row g-3 align-items-center mb-3">
+                        <div class="col-auto">
+                            <label for="quantity" class="text-light small fw-semibold">Quantity:</label>
+                        </div>
+                        <div class="col-auto">
+                            <input type="number" id="quantity" name="quantity" value="1" min="1" max="{{ product.stock or 1 }}" class="form-control form-control-dark" style="width: 90px;" {% if product.stock <= 0 %}disabled{% endif %}>
+                        </div>
+                        <div class="col">
+                            <button type="submit" class="btn btn-primary-gradient w-100 py-2 fw-semibold" {% if product.stock <= 0 %}disabled{% endif %}>
+                                🛒 Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                </form>
+
+                <!-- Value Props -->
+                <div class="border-top border-secondary pt-3 mt-4">
+                    <div class="row g-2 text-secondary small">
+                        <div class="col-6">✓ Fictional academic lab item</div>
+                        <div class="col-6">✓ Harmless seeded data</div>
+                        <div class="col-6">✓ Isolated local transactions</div>
+                        <div class="col-6">✓ Zero external dependencies</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Related Products -->
+    {% if related_products %}
+    <div class="mt-5 pt-4">
+        <h3 class="h4 text-light mb-4">Related Hardware in {{ product.category }}</h3>
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+            {% for rel in related_products %}
+            <div class="col">
+                <div class="glass-card p-3 d-flex align-items-center gap-3">
+                    <div style="width: 70px; height: 70px; background: #1e293b; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                        <img src="{{ rel.image_url }}" alt="{{ rel.name }}" style="max-height: 50px; max-width: 50px;">
+                    </div>
+                    <div>
+                        <h6 class="mb-1 text-light">
+                            <a href="{{ url_for('products.detail', product_id=rel.id) }}" class="text-light text-decoration-none">
+                                {{ rel.name }}
+                            </a>
+                        </h6>
+                        <span class="text-info fw-bold">${{ "%.2f"|format(rel.price) }}</span>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

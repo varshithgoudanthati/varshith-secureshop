@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}User Profile — SecureShop{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <!-- IDOR Lab Warning for Profile -->
+            {% if lab_mode == 'vulnerable' and profile_user.id != current_user.id %}
+            <div class="alert alert-danger py-2 mb-4 d-flex justify-content-between align-items-center">
+                <span>⚠️ <strong>A01 IDOR Profile Leak:</strong> You are logged in as <code>{{ current_user.username }}</code> (ID {{ current_user.id }}) but viewing/editing profile of <code>{{ profile_user.username }}</code> (ID {{ profile_user.id }}).</span>
+                <span class="badge bg-danger">IDOR Confirmed!</span>
+            </div>
+            {% endif %}
+
+            <div class="glass-card p-4 p-md-5">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h1 class="h3 text-light mb-1">Account Profile</h1>
+                        <p class="text-secondary small mb-0">Manage customer credentials and delivery preferences.</p>
+                    </div>
+                    <span class="badge {% if profile_user.is_admin %}badge-soft-amber{% else %}badge-soft-indigo{% endif %} px-3 py-2">
+                        {% if profile_user.is_admin %}Administrator{% else %}Standard Customer{% endif %}
+                    </span>
+                </div>
+
+                <form method="POST" action="">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label text-secondary small fw-semibold">Username</label>
+                            <input type="text" class="form-control form-control-dark" value="{{ profile_user.username }}" disabled>
+                            <small class="text-muted">Username cannot be modified.</small>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label text-secondary small fw-semibold">Email Address</label>
+                            <input type="email" class="form-control form-control-dark" value="{{ profile_user.email }}" disabled>
+                            <small class="text-muted">Verified account email.</small>
+                        </div>
+
+                        <div class="col-12">
+                            <label for="full_name" class="form-label text-light small fw-semibold">Full Legal Name</label>
+                            <input type="text" class="form-control form-control-dark" id="full_name" name="full_name" value="{{ profile_user.full_name }}" required>
+                        </div>
+
+                        <div class="col-12">
+                            <label for="address" class="form-label text-light small fw-semibold">Default Shipping Address</label>
+                            <input type="text" class="form-control form-control-dark" id="address" name="address" value="{{ profile_user.address or '' }}">
+                        </div>
+
+                        <div class="col-12">
+                            <label for="phone" class="form-label text-light small fw-semibold">Phone Number</label>
+                            <input type="text" class="form-control form-control-dark" id="phone" name="phone" value="{{ profile_user.phone or '' }}">
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center pt-3 border-top border-secondary">
+                        <small class="text-secondary">Registered: {{ profile_user.created_at or 'Local Lab Session' }}</small>
+                        <button type="submit" class="btn btn-primary-gradient px-4">
+                            Save Profile Changes
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

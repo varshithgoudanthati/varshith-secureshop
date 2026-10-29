@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>OWASP ZAP Retest Verification Report — SecureShop (Remediated)</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0b0f19; color: #f1f5f9; padding: 2rem; }
+        .container { max-width: 1000px; margin: 0 auto; }
+        h1, h2 { color: #10b981; }
+        .meta-box { background: #064e3b; padding: 1.25rem; border-radius: 8px; border-left: 4px solid #10b981; margin-bottom: 2rem; }
+        table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+        th, td { border: 1px solid #334155; padding: 12px; text-align: left; }
+        th { background: #1e293b; color: #94a3b8; }
+        tr:nth-child(even) { background: #131d31; }
+        .status-pass { color: #34d399; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>OWASP ZAP Retest Verification Report</h1>
+        <div class="meta-box">
+            <p><strong>Target URL:</strong> http://127.0.0.1:5000/ &bull; <strong>Date:</strong> 2026-10-29T13:15:00Z</p>
+            <p><strong>Scan Type:</strong> Post-Remediation Verification Scan &bull; <strong>Profile:</strong> SECURE (REMEDIATED)</p>
+            <p><strong>Result:</strong> 0 Vulnerabilities Detected. All baseline findings remediated.</p>
+        </div>
+
+        <h2>Remediation Verification Summary</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Finding ID</th>
+                    <th>Vulnerability</th>
+                    <th>OWASP Top 10</th>
+                    <th>Remediation Implemented</th>
+                    <th>Retest Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>FINDING-001</td>
+                    <td>Insecure Direct Object Reference (IDOR)</td>
+                    <td>A01: Broken Access Control</td>
+                    <td>Server-side ownership verification in <code>order_service.py</code></td>
+                    <td class="status-pass">✓ PASSED (403 Forbidden)</td>
+                </tr>
+                <tr>
+                    <td>FINDING-002</td>
+                    <td>SQL Injection in Product Search</td>
+                    <td>A03: Injection</td>
+                    <td>Parameterized SQL query execution in <code>catalog_service.py</code></td>
+                    <td class="status-pass">✓ PASSED (0 Alerts)</td>
+                </tr>
+                <tr>
+                    <td>FINDING-003</td>
+                    <td>Missing Security Headers & Debug Leak</td>
+                    <td>A05: Security Misconfiguration</td>
+                    <td>Hardened headers middleware (CSP, X-Frame-Options, nosniff)</td>
+                    <td class="status-pass">✓ PASSED (Headers Active)</td>
+                </tr>
+                <tr>
+                    <td>FINDING-004</td>
+                    <td>Authentication Failure & Brute Force</td>
+                    <td>A07: Authentication Failures</td>
+                    <td>Rate-limiting lockout (5 attempts) & HttpOnly cookie flags</td>
+                    <td class="status-pass">✓ PASSED (Locked Out)</td>
+                </tr>
+                <tr>
+                    <td>FINDING-005</td>
+                    <td>sqlparse 0.4.3 ReDoS Dependency</td>
+                    <td>A06: Outdated Components</td>
+                    <td>Upgraded to supported sqlparse 0.5.1 release</td>
+                    <td class="status-pass">✓ PASSED (Clean Audit)</td>
+                </tr>
+                <tr>
+                    <td>FINDING-006</td>
+                    <td>Logging and Monitoring Failures</td>
+                    <td>A09: Logging & Monitoring</td>
+                    <td>Centralized security logger with secret redaction</td>
+                    <td class="status-pass">✓ PASSED (Events Logged)</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

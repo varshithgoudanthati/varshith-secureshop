@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block title %}Order {{ order.order_number }} — SecureShop{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <span class="badge badge-soft-indigo mb-2">Order Receipt</span>
+            <h1 class="h3 text-light mb-1">{{ order.order_number }}</h1>
+            <p class="text-secondary small mb-0">Placed on {{ order.created_at or 'Local Lab Session' }}</p>
+        </div>
+        <a href="{{ url_for('orders.history') }}" class="btn btn-outline-secondary btn-sm">&larr; Back to Orders</a>
+    </div>
+
+    <!-- IDOR Lab Alert Indicator -->
+    {% if lab_mode == 'vulnerable' %}
+    <div class="alert alert-danger py-2 mb-4 d-flex justify-content-between align-items-center">
+        <span>⚠️ <strong>A01 IDOR Lab Check:</strong> User ID owning this order is <code>{{ order.user_id }}</code>. Your current user ID is <code>{{ current_user.id }}</code>.</span>
+        {% if order.user_id != current_user.id %}
+        <span class="badge bg-danger">IDOR Vulnerability Verified!</span>
+        {% else %}
+        <span class="badge bg-secondary">Viewing Own Order</span>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <div class="row g-4">
+        <!-- Order Line Items -->
+        <div class="col-lg-8">
+            <div class="glass-card p-4">
+                <h5 class="text-light mb-3">Order Items</h5>
+                <div class="table-responsive">
+                    <table class="table table-dark table-borderless align-middle mb-0">
+                        <thead class="border-bottom border-secondary text-secondary small">
+                            <tr>
+                                <th>Product Name</th>
+                                <th>Unit Price</th>
+                                <th>Qty</th>
+                                <th class="text-end">Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in order.items %}
+                            <tr class="border-bottom border-secondary">
+                                <td class="text-light fw-semibold">{{ item.product_name }}</td>
+                                <td class="text-secondary">${{ "%.2f"|format(item.unit_price) }}</td>
+                                <td class="text-secondary">{{ item.quantity }}</td>
+                                <td class="text-info fw-bold text-end">${{ "%.2f"|format(item.subtotal) }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th colspan="3" class="text-end pt-3 text-secondary">Total:</th>
+                                <th class="text-end pt-3 text-info fs-5">${{ "%.2f"|format(order.total_amount) }}</th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Shipping & Customer Summary -->
+        <div class="col-lg-4">
+            <div class="glass-card p-4">
+                <h5 class="text-light mb-3">Delivery Information</h5>
+                <div class="mb-3">
+                    <small class="text-secondary d-block">Recipient</small>
+                    <span class="text-light fw-semibold">{{ order.shipping_name }}</span>
+                </div>
+                <div class="mb-3">
+                    <small class="text-secondary d-block">Shipping Address</small>
+                    <span class="text-light">{{ order.shipping_address }}</span>
+                </div>
+                <div class="mb-3">
+                    <small class="text-secondary d-block">Payment Status</small>
+                    <span class="badge badge-soft-green">{{ order.payment_status }}</span>
+                </div>
+                <div>
+                    <small class="text-secondary d-block">Fulfillment Status</small>
+                    <span class="badge badge-soft-indigo">{{ order.order_status }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

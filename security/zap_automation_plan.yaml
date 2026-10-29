@@ -1,0 +1,72 @@
+---
+env:
+  contexts:
+    - name: "SecureShop-LocalContext"
+      urls:
+        - "http://127.0.0.1:5000/"
+      includePaths:
+        - "http://127.0.0.1:5000/.*"
+      excludePaths:
+        - "http://127.0.0.1:5000/logout"
+      authentication:
+        method: "form"
+        parameters:
+          loginPageUrl: "http://127.0.0.1:5000/login"
+          loginRequestUrl: "http://127.0.0.1:5000/login"
+          loginRequestBody: "username={%username%}&password={%password%}&csrf_token={%csrf_token%}"
+        verification:
+          method: "response"
+          loggedInRegex: "\\QSign Out\\E"
+          loggedOutRegex: "\\QSign In\\E"
+      users:
+        - name: "Alice"
+          credentials:
+            username: "alice"
+            password: "AlicePass123!"
+  parameters:
+    failOnError: false
+    progressToStdout: true
+
+jobs:
+  # 1. Passive Scanner Configuration
+  - type: passiveScan-config
+    parameters:
+      maxAlertsPerRule: 10
+      scanOnlyInScope: true
+
+  # 2. Spider Web Crawler
+  - type: spider
+    parameters:
+      context: "SecureShop-LocalContext"
+      user: "Alice"
+      maxDuration: 5
+      maxDepth: 4
+
+  # 3. Passive Scan Wait
+  - type: passiveScan-wait
+    parameters:
+      maxDuration: 5
+
+  # 4. Active Scan (Bounded to Local Lab)
+  - type: activeScan
+    parameters:
+      context: "SecureShop-LocalContext"
+      user: "Alice"
+      maxDuration: 10
+      policy: "Default Policy"
+
+  # 5. Report Generation
+  - type: report
+    parameters:
+      template: "traditional-html"
+      reportDir: "security/reports"
+      reportFile: "zap_af_scan_report.html"
+      reportTitle: "SecureShop OWASP ZAP Assessment Report"
+      reportDescription: "Automated DAST baseline audit report for SecureShop application."
+
+  - type: report
+    parameters:
+      template: "traditional-json"
+      reportDir: "security/reports"
+      reportFile: "zap_af_scan_report.json"
+      reportTitle: "SecureShop OWASP ZAP JSON Telemetry"

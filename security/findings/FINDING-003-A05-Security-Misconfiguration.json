@@ -1,0 +1,35 @@
+{
+  "finding_id": "FINDING-003",
+  "vulnerability_name": "Missing HTTP Security Headers and Verbose Internal Debug Error Exposure",
+  "owasp_category": "A05:2021-Security Misconfiguration",
+  "severity": "Medium",
+  "severity_justification": "Missing defense-in-depth headers increases susceptibility to Clickjacking (UI redressing) and MIME-type sniffing. Verbose stack traces leak server paths, dependency versions, and internal implementation details to attackers.",
+  "affected_component": {
+    "endpoints": [
+      "All HTTP responses",
+      "/api/lab/trigger-error"
+    ],
+    "configuration": [
+      "Flask DEBUG=True",
+      "Missing after_request header middleware"
+    ]
+  },
+  "root_cause": "The application ran with Flask debug mode enabled by default and lacked explicit HTTP response header hardening middleware.",
+  "safe_reproduction_steps": [
+    "1. Start the application in vulnerable mode (SECURESHOP_MODE=vulnerable).",
+    "2. Inspect HTTP response headers using curl or browser DevTools: curl -I http://127.0.0.1:5000/",
+    "3. Trigger uncaught error: curl http://127.0.0.1:5000/api/lab/trigger-error"
+  ],
+  "expected_vulnerable_behavior": "Headers X-Frame-Options, Content-Security-Policy, and X-Content-Type-Options are absent. Error endpoint displays full Python traceback and environment variables.",
+  "observed_evidence": "HTTP response shows 'Server: Werkzeug/Debug-Unshielded'. No X-Frame-Options or CSP headers present. Unhandled exception displays complete code traceback revealing filesystem paths.",
+  "potential_impact": "Clickjacking attacks embedding the application in malicious iframes; information disclosure aiding targeted exploit development.",
+  "remediation": "Implemented `apply_security_headers` middleware in `secureshop.services.security_middleware` setting X-Frame-Options: DENY, X-Content-Type-Options: nosniff, Referrer-Policy, and strict Content-Security-Policy. Enforced custom sanitized 500 error handler in `secureshop/__init__.py`.",
+  "retest_procedure": [
+    "1. Start application in secure mode (SECURESHOP_MODE=secure).",
+    "2. Inspect response headers: curl -I http://127.0.0.1:5000/",
+    "3. Run automated tests: pytest tests/test_security_misconfig_headers.py -v."
+  ],
+  "retest_result": "PASS. All 5 recommended security headers are present. 500 server error displays a generic, friendly error message with zero stack trace leakage.",
+  "related_test_case": "tests/test_security_misconfig_headers.py::test_security_headers_present_in_secure_mode",
+  "status": "Remediated"
+}

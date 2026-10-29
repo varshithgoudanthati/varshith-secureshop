@@ -1,0 +1,35 @@
+{
+  "finding_id": "FINDING-004",
+  "vulnerability_name": "Missing Login Rate Limiting and Insecure Session Cookie Flags",
+  "owasp_category": "A07:2021-Identification and Authentication Failures",
+  "severity": "High",
+  "severity_justification": "Without login rate limiting, attacker scripts can brute-force credentials indefinitely. Omitting HttpOnly on session cookies allows malicious client-side scripts to steal authenticated session tokens.",
+  "affected_component": {
+    "endpoints": [
+      "/login"
+    ],
+    "configuration": [
+      "SESSION_COOKIE_HTTPONLY=False",
+      "SESSION_COOKIE_SAMESITE=None",
+      "No failed attempt throttling"
+    ]
+  },
+  "root_cause": "Authentication logic did not log failed attempts into a throttling table, and default session cookie flags permitted JavaScript access without SameSite attribute protection.",
+  "safe_reproduction_steps": [
+    "1. Start the application in vulnerable mode (SECURESHOP_MODE=vulnerable).",
+    "2. Send 10 consecutive failed login POST requests to /login for user 'alice'.",
+    "3. Inspect Set-Cookie header on successful authentication."
+  ],
+  "expected_vulnerable_behavior": "Server continues accepting and evaluating passwords without locking the account or delaying responses. Session cookie lacks 'HttpOnly' and 'SameSite=Lax'.",
+  "observed_evidence": "10 failed attempts produced HTTP 401 without lockout. Set-Cookie header issued 'secureshop_session' without HttpOnly attribute.",
+  "potential_impact": "Account takeover via automated credential stuffing / password dictionary attacks; session hijacking via Cross-Site Scripting (XSS).",
+  "remediation": "Implemented `is_ip_locked_out()` and `record_login_attempt()` in `auth_service.py` to lock out after 5 consecutive failed attempts for 15 minutes. Configured `SESSION_COOKIE_HTTPONLY=True` and `SESSION_COOKIE_SAMESITE='Lax'`. Implemented session regeneration (`session.clear()`) upon login to defeat session fixation.",
+  "retest_procedure": [
+    "1. Start application in secure mode (SECURESHOP_MODE=secure).",
+    "2. Send 5 failed login attempts for 'alice'. Send 6th attempt.",
+    "3. Run automated tests: pytest tests/test_security_auth_hardening.py -v."
+  ],
+  "retest_result": "PASS. 6th attempt is blocked with 'Account access temporarily locked'. Session cookies contain HttpOnly and SameSite=Lax.",
+  "related_test_case": "tests/test_security_auth_hardening.py::test_login_rate_limiting_lockout_in_secure_mode",
+  "status": "Remediated"
+}

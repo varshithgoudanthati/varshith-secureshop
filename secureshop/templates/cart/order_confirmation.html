@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}Order Confirmation — SecureShop{% endblock %}
+
+{% block content %}
+<div class="container py-5 text-center">
+    <div class="glass-card p-5 mx-auto" style="max-width: 650px;">
+        <div class="display-3 mb-3">🎉</div>
+        <h1 class="h3 text-light fw-bold mb-2">Simulated Order Confirmed!</h1>
+        <p class="text-secondary small mb-4">
+            Thank you for completing your lab simulation. Your fictional order has been recorded.
+        </p>
+
+        <div class="badge badge-soft-green fs-6 px-4 py-2 mb-4">
+            Order Reference: {{ order.order_number }}
+        </div>
+
+        <div class="border-top border-bottom border-secondary py-3 my-3 text-start small">
+            <div class="d-flex justify-content-between mb-1">
+                <span class="text-secondary">Recipient:</span>
+                <span class="text-light fw-semibold">{{ order.shipping_name }}</span>
+            </div>
+            <div class="d-flex justify-content-between mb-1">
+                <span class="text-secondary">Destination:</span>
+                <span class="text-light">{{ order.shipping_address }}</span>
+            </div>
+            <div class="d-flex justify-content-between mb-1">
+                <span class="text-secondary">Payment Status:</span>
+                <span class="text-success">{{ order.payment_status }}</span>
+            </div>
+            <div class="d-flex justify-content-between">
+                <span class="text-secondary">Total Amount:</span>
+                <span class="text-info fw-bold">${{ "%.2f"|format(order.total_amount) }}</span>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-center gap-3 mt-4">
+            <a href="{{ url_for('orders.detail', order_id=order.id) }}" class="btn btn-outline-info">
+                View Order Details
+            </a>
+            <a href="{{ url_for('products.catalog') }}" class="btn btn-primary-gradient">
+                Continue Shopping
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

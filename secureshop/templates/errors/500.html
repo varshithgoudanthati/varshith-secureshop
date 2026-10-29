@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}500 Internal Server Error — SecureShop{% endblock %}
+{% block content %}
+<div class="container py-5 text-center">
+    <div class="glass-card p-5 mx-auto" style="max-width: 580px;">
+        <div class="display-3 mb-3">🛠️</div>
+        <h1 class="h3 text-light fw-bold mb-2">500 — Server Error</h1>
+        <p class="text-secondary small mb-3">
+            An unexpected error occurred while processing your request. Our engineering team has been notified.
+        </p>
+        <div class="alert alert-secondary py-2 small mb-4 font-monospace">
+            🛡️ <strong>Hardened Error Response:</strong> Stack traces and implementation details are suppressed in secure mode to prevent information disclosure (OWASP A05).
+        </div>
+        <a href="{{ url_for('products.index') }}" class="btn btn-primary-gradient">Back to Home</a>
+    </div>
+</div>
+{% endblock %}

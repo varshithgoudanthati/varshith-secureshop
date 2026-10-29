@@ -1,0 +1,35 @@
+{
+  "finding_id": "FINDING-002",
+  "vulnerability_name": "SQL Injection via Unparameterized Product Search Query",
+  "owasp_category": "A03:2021-Injection",
+  "severity": "High",
+  "severity_justification": "Allows an unauthenticated or authenticated user to alter the SQL query syntax, bypassing filtering logic, revealing hidden/inactive catalog records, or accessing unauthorized database data.",
+  "affected_component": {
+    "endpoints": [
+      "/search"
+    ],
+    "parameters": [
+      "q"
+    ],
+    "method": "GET",
+    "service": "secureshop.services.catalog_service.search_products"
+  },
+  "root_cause": "The application formatted the SQL query using Python f-strings with raw query parameters directly interpolated into the WHERE clause without parameterization.",
+  "safe_reproduction_steps": [
+    "1. Start the application in vulnerable mode (SECURESHOP_MODE=vulnerable).",
+    "2. Navigate to: GET http://127.0.0.1:5000/search?q='%20OR%201=1%20--",
+    "3. Inspect the returned product catalog grid."
+  ],
+  "expected_vulnerable_behavior": "The single quote breaks out of the LIKE clause and injects a boolean true condition ('1=1'), returning all database products including items not matching the search keyword.",
+  "observed_evidence": "All 10 active products returned despite query not matching item names. Unmatched single quote `q='` triggers raw `sqlite3.OperationalError: incomplete input` in vulnerable debug trace.",
+  "potential_impact": "Bypass of search visibility filters, unintended data enumeration, and potential extraction of database contents via UNION-based attacks if unaddressed.",
+  "remediation": "Replaced string interpolation with parameterized SQL query: `cursor.execute('SELECT * FROM products WHERE is_active = 1 AND (name LIKE ? OR description LIKE ?)', (param, param))`. Added input length validation.",
+  "retest_procedure": [
+    "1. Start the application in secure mode (SECURESHOP_MODE=secure).",
+    "2. Submit payload: GET http://127.0.0.1:5000/search?q='%20OR%201=1%20--",
+    "3. Run automated test: pytest tests/test_security_injection.py -v."
+  ],
+  "retest_result": "PASS. In secure mode, the payload is treated strictly as a literal search string. Zero matching items are returned, and no database syntax errors are generated.",
+  "related_test_case": "tests/test_security_injection.py::test_sqli_defense_in_secure_mode",
+  "status": "Remediated"
+}

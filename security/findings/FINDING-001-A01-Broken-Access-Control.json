@@ -1,0 +1,41 @@
+{
+  "finding_id": "FINDING-001",
+  "vulnerability_name": "Insecure Direct Object Reference (IDOR) on Customer Orders and Profiles",
+  "owasp_category": "A01:2021-Broken Access Control",
+  "severity": "High",
+  "severity_justification": "Allows horizontal privilege escalation where any authenticated customer can view and modify personal data, delivery addresses, and purchase history of other customers by enumerating predictable numeric identifiers.",
+  "affected_component": {
+    "endpoints": [
+      "/orders/<int:order_id>",
+      "/profile/<int:user_id>"
+    ],
+    "parameters": [
+      "order_id",
+      "user_id"
+    ],
+    "methods": [
+      "GET",
+      "POST"
+    ]
+  },
+  "root_cause": "The application queried database records solely by primary key without verifying server-side whether the currently authenticated session user owns the requested record or possesses administrative permissions.",
+  "safe_reproduction_steps": [
+    "1. Start the application in vulnerable mode (SECURESHOP_MODE=vulnerable).",
+    "2. Authenticate as Customer 1 ('alice' / 'AlicePass123!').",
+    "3. Request the order receipt URL for Order #3: GET http://127.0.0.1:5000/orders/3.",
+    "4. Inspect the returned HTML response."
+  ],
+  "expected_vulnerable_behavior": "Server responds with HTTP 200 OK and renders Order #3 containing Bob's full name, delivery address ('404 Hacker Ave'), and purchased items.",
+  "observed_evidence": "HTTP 200 OK received. Rendered body displays: 'ORD-2026-BOB001', 'Bob Jones', '404 Hacker Ave, Cyber City, NY'. Telemetry logged: 'A01 IDOR Lab Check: User ID owning this order is 3. Your current user ID is 2.'",
+  "potential_impact": "Unauthorized exposure of personally identifiable information (PII), shipping records, order contents, and potential GDPR/privacy regulatory violations.",
+  "remediation": "Implemented server-side authorization check in `order_service.py` and `routes/auth.py`. Verifies `if order.user_id != current_user.id and not current_user.is_admin: abort(403)`. Profile endpoints strictly scope queries to the authenticated session ID.",
+  "retest_procedure": [
+    "1. Start the application in default secure mode (SECURESHOP_MODE=secure).",
+    "2. Sign in as 'alice'.",
+    "3. Attempt to fetch GET /orders/3.",
+    "4. Run pytest test suite: pytest tests/test_security_access_control.py -v."
+  ],
+  "retest_result": "PASS. Server denies access with HTTP 403 Forbidden. Telemetry records structured security event 'AUTHZ_DENIED_IDOR'.",
+  "related_test_case": "tests/test_security_access_control.py::test_idor_order_defense_in_secure_mode",
+  "status": "Remediated"
+}

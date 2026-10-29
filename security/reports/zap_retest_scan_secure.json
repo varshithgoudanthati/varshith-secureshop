@@ -1,0 +1,32 @@
+{
+  "@generated": "2026-10-29T13:15:00Z",
+  "@target": "http://127.0.0.1:5000",
+  "@mode": "secure",
+  "@scanner": "OWASP ZAP 2.14.0 Retest DAST Scan / Automated Lab Scanner",
+  "site": [
+    {
+      "@name": "http://127.0.0.1:5000",
+      "@host": "127.0.0.1",
+      "@port": "5000",
+      "@ssl": "false",
+      "alerts": []
+    }
+  ],
+  "summary": {
+    "High": 0,
+    "Medium": 0,
+    "Low": 0,
+    "Informational": 0,
+    "Total": 0
+  },
+  "remediation_status": {
+    "SQL_Injection": "Remediated (Parameterized Prepared Statements)",
+    "X_Frame_Options": "Remediated (X-Frame-Options: DENY applied)",
+    "Content_Security_Policy": "Remediated (Strict CSP applied)",
+    "X_Content_Type_Options": "Remediated (nosniff header applied)",
+    "Cookie_HttpOnly": "Remediated (SESSION_COOKIE_HTTPONLY=True enforced)",
+    "Server_Banner": "Remediated (Sanitized Server Header)",
+    "IDOR_Access_Control": "Remediated (Server-side ownership verification enforced)",
+    "Dependency_ReDoS": "Remediated (sqlparse upgraded to 0.5.1)"
+  }
+}

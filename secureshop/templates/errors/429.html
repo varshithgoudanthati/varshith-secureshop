@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}429 Too Many Requests — SecureShop{% endblock %}
+{% block content %}
+<div class="container py-5 text-center">
+    <div class="glass-card p-5 mx-auto" style="max-width: 550px;">
+        <div class="display-3 mb-3">⏳</div>
+        <h1 class="h3 text-light fw-bold mb-2">429 — Rate Limit Exceeded</h1>
+        <p class="text-secondary small mb-4">
+            {{ error.description or 'Too many authentication or request attempts detected from this IP. Please wait before retrying.' }}
+        </p>
+        <div class="alert alert-secondary py-2 small mb-4">
+            🛡️ <strong>A07 Defense:</strong> Rate limiting protects against automated brute-force attacks and credential stuffing.
+        </div>
+        <a href="{{ url_for('products.index') }}" class="btn btn-primary-gradient">Return to Home</a>
+    </div>
+</div>
+{% endblock %}

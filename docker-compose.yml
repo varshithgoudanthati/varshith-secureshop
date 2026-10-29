@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  # SecureShop Application Service
+  secureshop:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: secureshop-app
+    environment:
+      - SECURESHOP_MODE=secure  # Set to 'vulnerable' for authorized lab testing
+      - PORT=5000
+      - SECRET_KEY=docker-lab-isolated-secret-key-32chars
+    ports:
+      - "127.0.0.1:5000:5000"
+    networks:
+      secureshop-net:
+        aliases:
+          - app.secureshop.local
+
+  # OWASP ZAP Scanner (Isolated Container Scanner)
+  zap:
+    image: zaproxy/zap-stable:latest
+    container_name: secureshop-zap
+    depends_on:
+      - secureshop
+    volumes:
+      - ./security/reports:/zap/wrk/:rw
+    networks:
+      - secureshop-net
+    command: >
+      zap-baseline.py -t http://app.secureshop.local:5000 -r zap_baseline_scan.html -J zap_baseline_scan.json -I
+
+networks:
+  secureshop-net:
+    driver: bridge

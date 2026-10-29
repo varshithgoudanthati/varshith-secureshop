@@ -1,0 +1,33 @@
+{
+  "finding_id": "FINDING-006",
+  "vulnerability_name": "Insufficient Security Logging and Exposure of Sensitive Credentials in Logs",
+  "owasp_category": "A09:2021-Security Logging and Monitoring Failures",
+  "severity": "Medium",
+  "severity_justification": "Without structured audit logs for failed logins, authorization violations, and administrative actions, malicious activity goes undetected. Conversely, naive logging of raw request payloads risks leaking passwords or session tokens into plain log files.",
+  "affected_component": {
+    "module": "secureshop.services.security_logger",
+    "storage": [
+      "security_events table",
+      "security.log"
+    ]
+  },
+  "root_cause": "Initial application lacked unified security telemetry. Critical events like horizontal access control breaches (IDOR) and SQL injection attempts were silently dropped without notifying administrators.",
+  "safe_reproduction_steps": [
+    "1. Start application in vulnerable mode.",
+    "2. Perform horizontal authorization bypass (/orders/3).",
+    "3. Check application logs for security alert or audit record."
+  ],
+  "expected_vulnerable_behavior": "No security event is recorded in the database or log file, preventing incident response and forensics.",
+  "observed_evidence": "Zero entries created in audit tables for unauthorized access attempts in unmonitored mode.",
+  "potential_impact": "Inability to detect active intrusions, delayed incident response, lack of forensic evidence during post-breach investigation.",
+  "remediation": "Built centralized `security_logger.py` with `log_security_event()`. Automatically records event type, timestamp, severity, user ID, IP address, and sanitized parameters. Enforced automatic redaction of keys containing 'password', 'token', 'card', 'cvv', or 'secret'.",
+  "retest_procedure": [
+    "1. Start application in secure mode.",
+    "2. Trigger failed login and unauthorized order request.",
+    "3. Inspect `security_events` table and `security.log`.",
+    "4. Run test: pytest tests/test_security_logging.py -v."
+  ],
+  "retest_result": "PASS. Events 'AUTH_FAILURE' and 'AUTHZ_DENIED_IDOR' are captured with client IP and timestamps. Passwords and tokens are strictly scrubbed as '[REDACTED]'.",
+  "related_test_case": "tests/test_security_logging.py::test_security_logging_on_auth_failure_and_idor",
+  "status": "Remediated"
+}

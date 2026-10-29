@@ -1,0 +1,33 @@
+{
+  "finding_id": "FINDING-005",
+  "vulnerability_name": "Vulnerable and Outdated Dependency: sqlparse 0.4.3 ReDoS",
+  "owasp_category": "A06:2021-Vulnerable and Outdated Components",
+  "severity": "Medium",
+  "severity_justification": "Allows unauthenticated remote attackers to trigger high CPU consumption and thread exhaustion (Denial of Service) by supplying specially crafted SQL input that triggers catastrophic backtracking in regex parsers.",
+  "component_details": {
+    "package_name": "sqlparse",
+    "vulnerable_version": "0.4.3",
+    "supported_remediated_version": "0.5.1",
+    "affected_version_range": "< 0.4.4",
+    "cve_identifier": "CVE-2023-30608",
+    "ghsa_identifier": "GHSA-rrm6-wvj7-cwh2",
+    "cvss_v3_score": "7.5 (CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H)"
+  },
+  "root_cause": "The sqlparse library prior to version 0.4.4 contains a regular expression in its formatting and comment handling modules that is vulnerable to catastrophic backtracking when parsing recursive or unclosed comment markers.",
+  "safe_reproduction_steps": [
+    "1. Review `requirements-vulnerable.txt` specifying `sqlparse==0.4.3`.",
+    "2. Run dependency vulnerability check: pip-audit or safety scan against requirements-vulnerable.txt.",
+    "3. Observe flag for CVE-2023-30608 in sqlparse 0.4.3."
+  ],
+  "expected_vulnerable_behavior": "Automated dependency scanners flag sqlparse 0.4.3 as having a known public CVE with high availability impact.",
+  "observed_evidence": "Advisory verified on National Vulnerability Database (NVD): CVE-2023-30608. Fixed upstream in sqlparse 0.4.4 and 0.5.x.",
+  "potential_impact": "Denial of Service (DoS) resulting in application worker hangs, 100% CPU spikes, and refusal of service to legitimate e-commerce users.",
+  "remediation": "Upgraded component to supported release `sqlparse>=0.5.1` in `requirements-secure.txt` and `requirements.txt`. Rebuilt virtual environment with patched dependency.",
+  "retest_procedure": [
+    "1. Review `requirements-secure.txt` verifying `sqlparse==0.5.1`.",
+    "2. Run dependency audit against secure profile.",
+    "3. Verify application imports and functions correctly."
+  ],
+  "retest_result": "PASS. Dependency audit reports zero known vulnerabilities for sqlparse 0.5.1.",
+  "status": "Remediated"
+}

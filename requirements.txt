@@ -1,0 +1,7 @@
+# SecureShop - Default Requirements (Secure Profile)
+Flask>=3.0.0,<3.1.0
+Werkzeug>=3.0.0,<3.1.0
+Jinja2>=3.1.4
+sqlparse>=0.5.0
+requests>=2.31.0
+pytest>=8.0.0

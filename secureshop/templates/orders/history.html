@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}My Orders — SecureShop{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 text-light mb-1">My Orders</h1>
+            <p class="text-secondary small mb-0">View your simulated order history and order receipts.</p>
+        </div>
+        <a href="{{ url_for('products.catalog') }}" class="btn btn-outline-info btn-sm">Shop More</a>
+    </div>
+
+    {% if orders %}
+    <div class="glass-card p-4">
+        <div class="table-responsive">
+            <table class="table table-dark table-borderless align-middle mb-0">
+                <thead class="border-bottom border-secondary text-secondary small">
+                    <tr>
+                        <th>Order #</th>
+                        <th>Date</th>
+                        <th>Total</th>
+                        <th>Payment Status</th>
+                        <th>Order Status</th>
+                        <th class="text-end">Details</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in orders %}
+                    <tr class="border-bottom border-secondary">
+                        <td class="fw-semibold text-info">{{ order.order_number }}</td>
+                        <td class="text-secondary small">{{ order.created_at or 'Recent' }}</td>
+                        <td class="fw-bold text-light">${{ "%.2f"|format(order.total_amount) }}</td>
+                        <td>
+                            <span class="badge badge-soft-green">{{ order.payment_status }}</span>
+                        </td>
+                        <td>
+                            <span class="badge {% if order.order_status == 'Delivered' %}badge-soft-green{% elif order.order_status == 'Shipped' %}badge-soft-indigo{% else %}badge-soft-amber{% endif %}">
+                                {{ order.order_status }}
+                            </span>
+                        </td>
+                        <td class="text-end">
+                            <a href="{{ url_for('orders.detail', order_id=order.id) }}" class="btn btn-sm btn-outline-light">
+                                View Receipt &rarr;
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% else %}
+    <div class="glass-card p-5 text-center my-4">
+        <div class="display-5 mb-3">📦</div>
+        <h3 class="h4 text-light">No Orders Found</h3>
+        <p class="text-secondary small mb-4">You have not placed any simulated orders yet.</p>
+        <a href="{{ url_for('products.catalog') }}" class="btn btn-primary-gradient">Start Shopping</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

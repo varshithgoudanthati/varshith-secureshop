@@ -1,0 +1,127 @@
+================================================================================
+SecureShop Security Lab — Genuine Reproduction & Retest Evidence Traces
+Generated: 2026-10-29
+Test Target: http://127.0.0.1:5000
+Environment: Windows 11 / Python 3.11 / SQLite 3
+================================================================================
+
+[SCENARIO 1: OWASP A01 — Broken Access Control (IDOR)]
+--------------------------------------------------------------------------------
+Phase: Vulnerable Reproduction
+Request:
+  GET /orders/3 HTTP/1.1
+  Host: 127.0.0.1:5000
+  Cookie: secureshop_session=<Alice_Authenticated_Session_ID=2>
+
+Response (Vulnerable Mode):
+  HTTP/1.1 200 OK
+  Content-Type: text/html; charset=utf-8
+  
+  [Snippet from Body]
+  <h1>ORD-2026-BOB001</h1>
+  <div class="mb-3">
+    <small>Recipient</small>
+    <span>Bob Jones</span>
+  </div>
+  <div class="mb-3">
+    <small>Shipping Address</small>
+    <span>404 Hacker Ave, Cyber City, NY</span>
+  </div>
+  <td>Hardware Crypto Cold Storage</td>
+  <td>$129.99</td>
+
+Result: VULNERABILITY CONFIRMED. User 2 (Alice) viewed User 3 (Bob)'s order data.
+
+Phase: Secure Retest
+Request:
+  GET /orders/3 HTTP/1.1
+  Host: 127.0.0.1:5000
+  Cookie: secureshop_session=<Alice_Authenticated_Session_ID=2>
+
+Response (Secure Mode):
+  HTTP/1.1 403 FORBIDDEN
+  Content-Type: text/html; charset=utf-8
+  
+  [Snippet from Body]
+  <h1>403 — Access Denied</h1>
+  <p>Access denied. You cannot access another user's profile or order.</p>
+
+Security Telemetry Generated:
+  {"timestamp": "2026-10-29 13:07:01", "level": "WARNING", "event": {"event_type": "AUTHZ_DENIED_IDOR", "severity": "WARNING", "user_id": 2, "ip_address": "127.0.0.1", "endpoint": "/orders/3", "details": {"requested_order_id": 3, "order_owner_user_id": 3, "attempting_user_id": 2}}}
+
+Result: REMEDIATION VERIFIED. Access denied with HTTP 403.
+
+
+[SCENARIO 2: OWASP A03 — Injection (SQLi in Product Search)]
+--------------------------------------------------------------------------------
+Phase: Vulnerable Reproduction
+Request:
+  GET /search?q='%20OR%201=1%20-- HTTP/1.1
+  Host: 127.0.0.1:5000
+
+Response (Vulnerable Mode):
+  HTTP/1.1 200 OK
+  
+  [Snippet from Body]
+  <h1>Search Results for "' OR 1=1 --"</h1>
+  <p>Showing 10 active items.</p>
+  <h5>Hardware Security Key Pro</h5>
+  <h5>Hardware Crypto Cold Storage</h5>
+  <h5>Privacy Filter Laptop Screen 15.6"</h5>
+  ... (All active catalog products returned despite keyword mismatch)
+
+Result: VULNERABILITY CONFIRMED. Query logic altered via unparameterized string concatenation.
+
+Phase: Secure Retest
+Request:
+  GET /search?q='%20OR%201=1%20-- HTTP/1.1
+  Host: 127.0.0.1:5000
+
+Response (Secure Mode):
+  HTTP/1.1 200 OK
+  
+  [Snippet from Body]
+  <h1>Search Results for "' OR 1=1 --"</h1>
+  <p>Showing 0 active items.</p>
+  <h3>No Products Found</h3>
+
+Security Telemetry Generated:
+  {"timestamp": "2026-10-29 13:07:14", "level": "INFO", "event": {"event_type": "SQLI_SUSPECTED_INPUT", "severity": "INFO", "user_id": null, "ip_address": "127.0.0.1", "endpoint": "/search", "details": {"query_length": 13, "pattern_detected": true}}}
+
+Result: REMEDIATION VERIFIED. Query parameterized safely.
+
+
+[SCENARIO 3: OWASP A05 — Security Misconfiguration]
+--------------------------------------------------------------------------------
+Phase: Vulnerable Reproduction
+Headers in Vulnerable Mode:
+  HTTP/1.1 200 OK
+  Content-Type: text/html; charset=utf-8
+  Server: Werkzeug/Debug-Unshielded
+  (Missing X-Frame-Options, Content-Security-Policy, X-Content-Type-Options)
+
+Headers in Secure Mode:
+  HTTP/1.1 200 OK
+  Content-Type: text/html; charset=utf-8
+  Server: SecureShop-SafeServer
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: geolocation=(), camera=(), microphone=()
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:;
+
+Result: REMEDIATION VERIFIED. Security headers enforced.
+
+
+[SCENARIO 4: OWASP A07 — Authentication Failures]
+--------------------------------------------------------------------------------
+Phase: Vulnerable Reproduction
+  10 consecutive POST requests with invalid credentials for 'alice' all returned 401 without lockout.
+
+Phase: Secure Retest
+  Attempt 1-5: HTTP 401 "Invalid username or password"
+  Attempt 6+:  HTTP 401 "Account access temporarily locked due to multiple failed login attempts. Please try again later."
+  Lockout Event Logged:
+    {"timestamp": "2026-10-29 13:07:43", "level": "WARNING", "event": {"event_type": "AUTH_LOCKOUT", "severity": "WARNING", "user_id": null, "ip_address": "127.0.0.1", "endpoint": "/login", "details": {"username": "alice", "reason": "Max failed attempts exceeded"}}}
+
+Result: REMEDIATION VERIFIED. Brute-force throttling enforced.

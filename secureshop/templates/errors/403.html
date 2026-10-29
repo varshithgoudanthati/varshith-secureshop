@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}403 Forbidden — SecureShop{% endblock %}
+{% block content %}
+<div class="container py-5 text-center">
+    <div class="glass-card p-5 mx-auto" style="max-width: 550px;">
+        <div class="display-3 mb-3">⛔</div>
+        <h1 class="h3 text-light fw-bold mb-2">403 — Access Denied</h1>
+        <p class="text-secondary small mb-4">
+            {{ error.description or 'You do not have authorization to view this protected resource.' }}
+        </p>
+        <div class="alert alert-secondary py-2 small mb-4">
+            🛡️ <strong>Authorization Protection Active:</strong> Access control checks verified that this request violates object ownership or administrative role requirements.
+        </div>
+        <a href="{{ url_for('products.index') }}" class="btn btn-primary-gradient">Return to Safety</a>
+    </div>
+</div>
+{% endblock %}
